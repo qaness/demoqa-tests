@@ -3,13 +3,12 @@ package demoqa.tests;
 import com.codeborne.selenide.Configuration;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.By;
 
-import static com.codeborne.selenide.Browsers.FIREFOX;
+import java.io.File;
 import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.open;
-
-
+import static com.codeborne.selenide.Selectors.byText;
+import static com.codeborne.selenide.Selenide.*;
 
 public class FormsTests {
 
@@ -18,22 +17,58 @@ public class FormsTests {
         Configuration.baseUrl = "https://demoqa.com";
         Configuration.browserSize = "1920x1080";
         Configuration.holdBrowserOpen = true;
+        Configuration.pageLoadStrategy = "eager";
     }
 
     @Test
-    void successTest() {
+    void fillingFormSuccessTest() {
         open("/automation-practice-form");
 
+        executeJavaScript("$('#fixedban').remove()");
+        executeJavaScript("$('footer').remove()");
+
+        //Input fields
         $("#firstName").setValue("Nasty");
         $("#lastName").setValue("Belova");
-     //   $("#currentAddress").setValue("Some address 1");
-     //   $("#permanentAddress").setValue("Another address 1");
-     //   $("#submit").click();
+        $("#userEmail").setValue("email@example.com");
+        $("#userNumber").setValue("9998887766");
+        $("#currentAddress").setValue("Pushkina st., Kolotushkina b.");
 
-     //   $("#output #name").shouldHave(text("Alex Egorov"));
-     //   $("#output #email").shouldHave(text("alex@egorov.com"));
-     //   $("#output #currentAddress").shouldHave(text("Some address 1"));
-     //   $("#output #permanentAddress").shouldHave(text("Another address 1"));
+        // Date & drop-down
+        $("#dateOfBirthInput").click();
+        $(".react-datepicker__month-select").selectOption("August");
+        $(".react-datepicker__year-select").selectOption("1991");
+        $(".react-datepicker__day--005").click();
+        $("#subjectsInput").setValue("a");
+        $(byText("Arts")).click();
+
+        $("#state").click();
+        $("#state").$(byText("Haryana")).click();
+        $("#city").click();
+        $("#city").$(byText("Panipat")).click();
+
+        //Radio & checkbox
+        $("#genterWrapper").$(byText("Female")).click();
+        $("#hobbiesWrapper").$(byText("Sports")).click();
+
+        //Upload Image field
+        $("#uploadPicture").uploadFile(new File("src/test/resources/example.png"));
+
+        $("#submit").click();
+
+        // assertions
+        
+        $(".table-responsive").$(byText("Student Name")).sibling(0).shouldHave(text("Nasty Belova"));
+        $(".table-responsive").$(byText("Student Email")).sibling(0).shouldHave(text("email@example.com"));
+        $(".table-responsive").$(byText("Gender")).sibling(0).shouldHave(text("Female"));
+        $(".table-responsive").$(byText("Mobile")).sibling(0).shouldHave(text("9998887766"));
+        $(".table-responsive").$(byText("Date of Birth")).sibling(0).shouldHave(text("05 August,1991"));
+        $(".table-responsive").$(byText("Subjects")).sibling(0).shouldHave(text("Arts"));
+        $(".table-responsive").$(byText("Hobbies")).sibling(0).shouldHave(text("Sports"));
+        $(".table-responsive").$(byText("Picture")).sibling(0).shouldHave(text("example.png"));
+        $(".table-responsive").$(byText("Address")).sibling(0).shouldHave(text("Pushkina st., Kolotushkina b."));
+        $(".table-responsive").$(byText("State and City")).sibling(0).shouldHave(text("Haryana Panipat"));
+
     }
 
 }
