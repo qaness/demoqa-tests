@@ -2,3 +2,8 @@
 /build
 /.gradle
 *.class
+.gradle
+*.log
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/test/**/build/
+settings.gradle
